@@ -22,11 +22,28 @@ router.post("/", async (req, res) => {
   }
 })
 
+router.get("/:id", blogFinder, async (req, res) => {
+  try {
+    res.json(req.blog)
+  } catch (error) {
+    res.status(400).json({ error })
+  }
+})
+
 router.delete("/:id", blogFinder, async (req, res) => {
   try {
     // await Blog.destroy({ where: { id: req.params.id } })
     await req.blog.destroy()
     res.status(204).end()
+  } catch (error) {
+    res.status(400).json({ error })
+  }
+})
+
+router.put("/:id", blogFinder, async (req, res) => {
+  try {
+    const updatedBlog = await req.blog.update({ likes: req.body.likes })
+    res.json(updatedBlog)
   } catch (error) {
     res.status(400).json({ error })
   }
