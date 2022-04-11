@@ -1,0 +1,18 @@
+{
+  "name": "blog-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:ibafly/learn-fullstackopen-part13.git",
+  "author": "ibafly <copppe@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "pg": "^8.7.3",
+    "sequelize": "^6.18.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
