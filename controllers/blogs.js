@@ -1,4 +1,5 @@
 const router = require("express").Router() // MIND the ()!!
+require("express-async-errors")
 const { Blog } = require("../models")
 
 const blogFinder = async (req, res, next) => {
@@ -18,7 +19,7 @@ router.post("/", async (req, res) => {
     const blog = await Blog.create(req.body)
     res.json(blog)
   } catch (error) {
-    return res.status(400).json({ error })
+    return res.status(400).json({ error: "failed to create a new blog" })
   }
 })
 
@@ -41,12 +42,16 @@ router.delete("/:id", blogFinder, async (req, res) => {
 })
 
 router.put("/:id", blogFinder, async (req, res) => {
-  try {
-    const updatedBlog = await req.blog.update({ likes: req.body.likes })
-    res.json(updatedBlog)
-  } catch (error) {
-    res.status(400).json({ error })
+  //  try {
+  const updatedBlog = await req.blog.update({ likes: req.body.likes })
+
+  if (!updatedBlog) {
+    return res.status(400).json({ error: "failed to change likes of a blog" })
   }
+  res.json(updatedBlog)
+  //  } catch (error) {
+  //    res.status(400).json({ error: "failed to change likes of a blog" + error })
+  //  }
 })
 
 module.exports = router
