@@ -1,6 +1,5 @@
 const router = require("express").Router()
 const { User } = require("../models")
-const { all } = require("./blogs")
 
 router.post("/", async (req, res) => {
   const newUser = await User.create(req.body)

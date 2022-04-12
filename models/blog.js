@@ -10,21 +10,28 @@ Blog.init(
       autoIncrement: true,
     },
     author: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING,
       allowNull: true,
     },
     url: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     title: {
-      type: DataTypes.TEXT,
+      type: DataTypes.STRING,
       allowNull: false,
     },
     likes: {
       type: DataTypes.INTEGER,
-      default: 1,
+      defaultValue: 0,
     },
+    // ---no need to define at class level
+    // ---use A.hasMany(B) B.belongsTo(A) achieves the same result
+    // userId: {
+    //   type: DataTypes.INTEGER,
+    //   allowNull: false,
+    //   references: { model: "users", key: "id" },
+    // },
   },
   {
     sequelize, // instance object created from database data

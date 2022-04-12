@@ -1,6 +1,6 @@
 const router = require("express").Router() // MIND the ()!!
 require("express-async-errors")
-const { Blog } = require("../models")
+const { Blog, User } = require("../models")
 
 const blogFinder = async (req, res, next) => {
   req.blog = await Blog.findByPk(req.params.id)
@@ -8,19 +8,34 @@ const blogFinder = async (req, res, next) => {
 }
 
 router.get("/", async (req, res) => {
-  const blogs = await Blog.findAll()
+  const blogs = await Blog.findAll({
+    attributes: {
+      exclude: ["userId"], // hide userId in blog model
+    },
+    include: {
+      model: User,
+      attributes: ["name"],
+    },
+  })
 
-  res.json(blogs)
+  res.status(200).json(blogs)
 })
 
 router.post("/", async (req, res) => {
-  try {
-    console.log(req)
-    const blog = await Blog.create(req.body)
-    res.json(blog)
-  } catch (error) {
+  if (!req.user) {
+    return res.status(401).send({ error: "not authorized" })
+  }
+
+  console.log(req.user.id)
+  const blogObj = { ...req.body, userId: req.user.id }
+  const addedBlog = await Blog.create(blogObj)
+  // const addedBlog = await Blog.create({ ...req.body, userId: req.user.id })
+
+  if (!addedBlog) {
     return res.status(400).json({ error: "failed to create a new blog" })
   }
+
+  res.json(addedBlog)
 })
 
 router.get("/:id", blogFinder, async (req, res) => {
