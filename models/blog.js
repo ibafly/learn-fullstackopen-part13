@@ -41,4 +41,22 @@ Blog.init(
   }
 )
 
-module.exports = Blog
+// const Author = sequelize.define("author", {
+//   attributes: [
+//     "Blog.author",
+//     [sequelize.fn("COUNT", sequelize.col("author")), "articles"],
+//     [sequelize.fn("SUM", sequelize.col("likes")), "likes"],
+//   ],
+//   group: ["Blog.author"],
+// })
+
+// const authors = await Blog.findAll({
+//   attributes: [
+//     "author",
+//     [sequelize.fn("COUNT", sequelize.col("author")), "articles"],
+//     [sequelize.fn("SUM", sequelize.col("likes")), "likes"],
+//   ],
+//   group: ["author"],
+// module.exports = { Blog, Author }
+
+module.exports = { Blog }
