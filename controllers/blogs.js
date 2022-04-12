@@ -1,3 +1,4 @@
+const { Op } = require("sequelize")
 const router = require("express").Router() // MIND the ()!!
 require("express-async-errors")
 const { Blog, User } = require("../models")
@@ -8,6 +9,14 @@ const blogFinder = async (req, res, next) => {
 }
 
 router.get("/", async (req, res) => {
+  const where = {}
+
+  if (req.query.search) {
+    where.title = {
+      [Op.iLike]: req.query.search,
+    }
+  }
+
   const blogs = await Blog.findAll({
     attributes: {
       exclude: ["userId"], // hide userId in blog model
@@ -16,6 +25,7 @@ router.get("/", async (req, res) => {
       model: User,
       attributes: ["name"],
     },
+    where,
   })
 
   res.status(200).json(blogs)
