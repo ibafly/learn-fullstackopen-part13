@@ -47,6 +47,12 @@ router.get("/:id", blogFinder, async (req, res) => {
 })
 
 router.delete("/:id", blogFinder, async (req, res) => {
+  if (req.blog.userId !== req.user.id) {
+    return res.status(403).send({
+      error: "no permission to delete blogs not added by current user",
+    })
+  }
+
   try {
     // await Blog.destroy({ where: { id: req.params.id } })
     await req.blog.destroy()
