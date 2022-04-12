@@ -1,5 +1,5 @@
 const router = require("express").Router()
-const { User } = require("../models")
+const { User, Blog } = require("../models")
 
 router.post("/", async (req, res) => {
   const newUser = await User.create(req.body)
@@ -12,7 +12,15 @@ router.post("/", async (req, res) => {
 })
 
 router.get("/", async (req, res) => {
-  const allUsers = await User.findAll()
+  const allUsers = await User.findAll({
+    attributes: {
+      exclude: ["blogIds"],
+    },
+    include: {
+      model: Blog,
+      attributes: ["title"],
+    },
+  })
 
   if (!allUsers) {
     return res.status("400").send({ error: "failed to list all users" })
