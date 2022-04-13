@@ -36,9 +36,10 @@ Blog.init(
   {
     sequelize, // instance object created from database data
     underscored: true,
-    timestamps: false,
+    timestamps: true, // IMPORTANT: if is set to false, then timestamps (created time & updated time) will not be bumped into DB under their columns, even you add created_at & updated_at in migration file!!
+    // QUESTION: does that mean models here will override table definitions in migration file?
     modelName: "blog",
   }
 )
 
-module.exports = { Blog }
+module.exports = Blog

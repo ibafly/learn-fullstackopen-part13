@@ -43,6 +43,11 @@ router.post("/", async (req, res) => {
     return res.status(401).send({ error: "not authorized" })
   }
 
+  const foundUser = await User.findByPk(req.user.id)
+  if (!foundUser) {
+    return res.status(401).send({ error: "user from token not exist" })
+  }
+
   console.log(req.user.id)
   const addedBlog = await Blog.create({ ...req.body, userId: req.user.id })
 
