@@ -25,7 +25,7 @@ router.get("/", async (req, res) => {
 
   const blogs = await Blog.findAll({
     attributes: {
-      exclude: ["userId"], // hide userId in blog model
+      exclude: ["userId"], // hide userId in responsed blog obj
     },
     include: {
       model: User,
@@ -44,9 +44,7 @@ router.post("/", async (req, res) => {
   }
 
   console.log(req.user.id)
-  const blogObj = { ...req.body, userId: req.user.id }
-  const addedBlog = await Blog.create(blogObj)
-  // const addedBlog = await Blog.create({ ...req.body, userId: req.user.id })
+  const addedBlog = await Blog.create({ ...req.body, userId: req.user.id })
 
   if (!addedBlog) {
     return res.status(400).json({ error: "failed to create a new blog" })
@@ -71,6 +69,7 @@ router.delete("/:id", blogFinder, async (req, res) => {
   }
 
   try {
+    // other try-catchs all refactored/eliminated because using express-async-errors, leaving this one for reference
     // await Blog.destroy({ where: { id: req.params.id } })
     await req.blog.destroy()
     res.status(204).end()
@@ -80,16 +79,12 @@ router.delete("/:id", blogFinder, async (req, res) => {
 })
 
 router.put("/:id", blogFinder, async (req, res) => {
-  //  try {
   const updatedBlog = await req.blog.update({ likes: req.body.likes })
 
   if (!updatedBlog) {
     return res.status(400).json({ error: "failed to change likes of a blog" })
   }
   res.json(updatedBlog)
-  //  } catch (error) {
-  //    res.status(400).json({ error: "failed to change likes of a blog" + error })
-  //  }
 })
 
 module.exports = router

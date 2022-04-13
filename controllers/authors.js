@@ -1,13 +1,8 @@
 const router = require("express").Router()
 const { sequelize } = require("../utils/db")
-// const { Author } = require("../models")
 const { Blog } = require("../models")
 
 router.get("/", async (req, res) => {
-  //   const authors = await Author.findAll({
-  //     attributes: {order: [["likes", "DESC"]]},
-  //   })
-
   const authors = await Blog.findAll({
     attributes: [
       "author",
@@ -15,22 +10,14 @@ router.get("/", async (req, res) => {
       [sequelize.fn("SUM", sequelize.col("likes")), "likes"],
     ],
     group: ["author"],
+    order: [[sequelize.literal("likes"), "DESC"]], // or [[sequelize.fn("SUM", sequelize.col("likes")), "DESC"]]
   })
+
+  if (!authors) {
+    return res.status(500).send({ error: "bad query" })
+  }
 
   res.status(200).send(authors)
 })
-//[
-//   attributes: {
-//     include: [[sequelize.fn("COUNT", sequelize.col("hats")), "n_hats"]]
-//   }
 
-// attributes
-//  (sequelize.fn("SUM", sequelize.col("items.price")), "totalItemsWorth")
-//],
-//  [
-//    sequelize.fn("COUNT", sequelize.fn("DISTINCT", sequelize.col("items.id"))),
-//    "itemsCount",
-//  ],
-
-// group:['blog.author']
 module.exports = router
