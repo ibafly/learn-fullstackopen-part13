@@ -29,6 +29,35 @@ router.get("/", async (req, res) => {
   res.json(allUsers)
 })
 
+router.get("/:id", async (req, res) => {
+  const foundUser = await User.findOne({
+    where: { id: req.params.id },
+    attributes: {
+      exclude: ["id", "blogIds", "createdAt", "updatedAt"],
+    },
+    include: [
+      {
+        model: Blog,
+        attributes: ["title"],
+      },
+      {
+        model: Blog,
+        as: "reading",
+        attributes: { exclude: ["userId", "createdAt", "updatedAt"] },
+        through: {
+          attributes: [],
+        },
+      },
+    ],
+  })
+
+  if (!foundUser) {
+    return res.status(404).send({ error: "not found user" })
+  }
+
+  res.send(foundUser)
+})
+
 router.put("/:username", async (req, res) => {
   const foundUser = await User.findOne({
     where: { username: req.params.username },
