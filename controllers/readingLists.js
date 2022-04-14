@@ -22,4 +22,17 @@ router.post("/", async (req, res) => {
   res.json(newUnread)
 })
 
+router.put("/:id", async (req, res) => {
+  const foundReadingList = await ReadingList.findByPk(req.params.id)
+  const updatedReadingList = await foundReadingList.update({
+    read: req.body.read,
+  })
+
+  if (!updatedReadingList) {
+    res.status(500).send({ error: "failed to change read status" })
+  }
+
+  res.send(updatedReadingList)
+})
+
 module.exports = router
