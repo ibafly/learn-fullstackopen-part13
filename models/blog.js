@@ -25,6 +25,16 @@ Blog.init(
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },
+    year: {
+      type: DataTypes.INTEGER,
+      validate: {
+        min: { args: 1991, msg: "year written must between 1991 and 2022" },
+        max: {
+          args: 2022,
+          msg: "year written must between 1991 and 2022",
+        },
+      },
+    },
     // ---no need to define at class level
     // ---use A.hasMany(B) B.belongsTo(A) achieves the same result
     // userId: {
