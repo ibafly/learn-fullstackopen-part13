@@ -1,5 +1,5 @@
 const router = require("express").Router()
-const { User, Blog } = require("../models")
+const { User, Blog, ReadingList } = require("../models")
 
 router.post("/", async (req, res) => {
   const newUser = await User.create(req.body)
@@ -30,22 +30,37 @@ router.get("/", async (req, res) => {
 })
 
 router.get("/:id", async (req, res) => {
+  let where = {}
+
+  if (req.query.read) {
+    where.read = req.query.read // way#1
+    // way#2: anothor way to filter /api/users/:id?read=<boolean>
+    // see nested attribute: https://sequelize.org/api/v7/index.html#WhereAttributeHash. Remember to put 'where' in the parent* object.
+    //
+    // where["$readings.readingList.user_id$"] = req.params.id
+    // where["$readings.readingList.read$"] = req.query.read
+  }
+
   const foundUser = await User.findOne({
-    where: { id: req.params.id },
+    where: {
+      id: req.params.id,
+      // ...where, // way#2 in parent* object
+    },
     attributes: {
       exclude: ["id", "blogIds", "createdAt", "updatedAt"],
-    },
+    }, // or simply written as `attributes: ['name','username']`
     include: [
       {
-        model: Blog,
+        model: Blog, // blogs one user added
         attributes: ["title"],
       },
       {
-        model: Blog,
-        as: "reading",
+        model: Blog, // blogs one user marked read status
+        as: "readings",
         attributes: { exclude: ["userId", "createdAt", "updatedAt"] },
         through: {
           attributes: ["read", "id"],
+          where, // way#1: put 'where' here when not using nested attribute querying
         },
       },
     ],
