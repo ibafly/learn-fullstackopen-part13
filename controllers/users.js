@@ -1,14 +1,26 @@
 const router = require("express").Router()
+const bcrypt = require("bcrypt")
 const { User, Blog, ReadingList } = require("../models")
 
 router.post("/", async (req, res) => {
-  const newUser = await User.create(req.body)
+  const { name, username, password } = req.body
+
+  const foundUser = await User.findOne({
+    where: { username },
+  })
+
+  if (foundUser) {
+    return res.status("400").send({ error: "username already been taken" })
+  }
+
+  const passwordHash = await bcrypt.hash(password, 10) // salt rounds is 10
+  const newUser = await User.create({ name, username, passwordHash })
 
   if (!newUser) {
     return res.status("400").send({ error: "failed to create a new user" })
   }
 
-  res.status("201").send(newUser)
+  res.status("201").send({ username, name })
 })
 
 router.get("/", async (req, res) => {

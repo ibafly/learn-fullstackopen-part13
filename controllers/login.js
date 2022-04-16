@@ -1,9 +1,10 @@
 const router = require("express").Router()
 const jwt = require("jsonwebtoken")
+const bcrypt = require("bcrypt")
 const { v4: uuidv4 } = require("uuid")
 const { SECRET } = require("../utils/config")
-const { User } = require("../models")
-const Session = require("../models/session")
+const { User, Session } = require("../models")
+// const Session = require("../models/session")
 
 router.post("/", async (req, res) => {
   const { username, password } = req.body
@@ -12,11 +13,15 @@ router.post("/", async (req, res) => {
   }
 
   const foundUser = await User.findOne({
-    where: { username: req.body.username },
+    where: { username },
   })
 
-  if (!foundUser || req.body.password !== "secret") {
-    return res.status("400").send({ error: "invalid username" })
+  const bothRight = foundUser
+    ? await bcrypt.compare(password, foundUser.passwordHash)
+    : false
+
+  if (!bothRight) {
+    return res.status("400").send({ error: "invalid username or password" })
   }
   console.log(foundUser)
   if (foundUser.disabled === true) {
