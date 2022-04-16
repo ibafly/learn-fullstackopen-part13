@@ -1,5 +1,6 @@
 const router = require("express").Router()
 const bcrypt = require("bcrypt")
+const middleware = require("../utils/middleware")
 const { User, Blog, ReadingList } = require("../models")
 
 router.post("/", async (req, res) => {
@@ -85,13 +86,19 @@ router.get("/:id", async (req, res) => {
   res.send(foundUser)
 })
 
-router.put("/:username", async (req, res) => {
+router.put("/:username", middleware.userExtractor, async (req, res) => {
   const foundUser = await User.findOne({
     where: { username: req.params.username },
   })
 
   if (!foundUser) {
     return res.status("404").send({ error: "not found this username" })
+  }
+
+  if (foundUser.username !== req.user.username) {
+    return res
+      .status("403")
+      .send({ error: "not authorized to change username of others" })
   }
 
   const updatedUser = await foundUser.update({ username: req.body.username })
