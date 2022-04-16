@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken")
 const { SECRET } = require("./config")
 const logger = require("./logger")
+const { Session } = require("../models")
 
 const tokenExtractor = (req, res, next) => {
   const authorization = req.get("authorization")
@@ -14,11 +15,19 @@ const tokenExtractor = (req, res, next) => {
   next()
 }
 
-const userExtractor = (req, res, next) => {
+const userExtractor = async (req, res, next) => {
   const userInfo = req.token ? jwt.verify(req.token, SECRET) : null
 
   if (!userInfo) {
     res.status("401").send({ error: "invalid token" })
+  }
+
+  // check session
+  const foundSession = await Session.findByPk(userInfo.jti)
+  console.log(userInfo.jti)
+
+  if (!foundSession) {
+    return res.status(401).send({ error: "expired token, session outdated" })
   }
 
   req.user = userInfo

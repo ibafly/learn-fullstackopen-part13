@@ -1,6 +1,7 @@
 const Blog = require("./blog")
 const User = require("./user")
 const ReadingList = require("./readingList")
+const Session = require("./session")
 
 User.hasMany(Blog)
 Blog.belongsTo(User)
@@ -10,7 +11,7 @@ Blog.belongsTo(User)
 User.belongsToMany(Blog, { through: ReadingList, as: "readings" })
 Blog.belongsToMany(User, { through: ReadingList })
 
-module.exports = { Blog, User, ReadingList }
+module.exports = { Blog, User, ReadingList, Session }
 
 // ReadingList can be defined aslo in this way, no need to import a seperate file like ./readingList
 // const User_Profile = sequelize.define("User_Profile", {}, { timestamps: false })
